@@ -132,8 +132,8 @@ Include = /etc/pacman.d/mirrorlist
 
 # Manjaro openrc
 
-#[keyrings]
-#Include = /etc/pacman.d/mirrorlist-keyrings
+[keyrings]
+Include = /etc/pacman.d/mirrorlist-keyrings
 
 
 # Vider la cache :
