@@ -1,0 +1,202 @@
+# Guide de migration artix linux mate vers manjaro openrc mate
+
+# Installer une artix linux Openrc 
+
+https://artixlinux.org
+
+# Mettre en place les mirroirs 
+
+sudo nano /etc/pacman.d/manjaro-mirrorlist
+
+Copier ce mirroir : Server = http://ftp.free.org/mirrors/repo.manjaro.org/repos/stable/$repo/$arch
+
+sudo nano /etc/pacman.d/mirrorlist-keyrings
+
+Copier ce mirroir : Server = https://stuff.nuka.works/mirrors/keyrings/ 
+
+# Copier ce /etc/pacman.conf 
+
+#
+# /etc/pacman.conf
+#
+# See the pacman.conf(5) manpage for option and repository directives
+
+#
+# GENERAL OPTIONS
+#
+[options]
+# The following paths are commented out with their default values listed.
+# If you wish to use different paths, uncomment and update the paths.
+#RootDir     = /
+#DBPath      = /var/lib/pacman/
+#CacheDir    = /var/cache/pacman/pkg/
+#LogFile     = /var/log/pacman.log
+#GPGDir      = /etc/pacman.d/gnupg/
+#HookDir     = /etc/pacman.d/hooks/
+HoldPkg     = pacman glibc
+#XferCommand = /usr/bin/curl -L -C - -f -o %o %u
+#XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
+#CleanMethod = KeepInstalled
+Architecture = auto
+
+IgnorePkg   = systemd 
+#IgnoreGroup = 
+
+#NoUpgrade   =
+#NoExtract   =
+
+# Misc options
+#UseSyslog
+Color
+#NoProgressBar
+CheckSpace
+#VerbosePkgLists
+ParallelDownloads = 5
+
+# By default, pacman accepts packages signed by keys that its local keyring
+# trusts (see pacman-key and its man page), as well as unsigned packages.
+#SigLevel    = Required DatabaseOptional
+SigLevel = Never 
+LocalFileSigLevel = Never
+RemoteFileSigLevel = Never 
+
+# NOTE: You must run `pacman-key --init` before first using pacman; the local
+# keyring can then be populated with the keys of all official Artix Linux
+# packagers with `pacman-key --populate artix`.
+
+#
+# REPOSITORIES
+#   - can be defined here or included from another file
+#   - pacman will search repositories in the order defined here
+#   - local/custom mirrors can be added here or in separate files
+#   - repositories listed first will take precedence when packages
+#     have identical names, regardless of version number
+#   - URLs will have $repo replaced by the name of the current repo
+#   - URLs will have $arch replaced by the name of the architecture
+#
+# Repository entries are of the format:
+#       [repo-name]
+#       Server = ServerName
+#       Include = IncludePath
+#
+# The header [repo-name] is crucial - it must be present and
+# uncommented to enable the repo.
+#
+
+# The gremlins repositories are disabled by default. To enable, uncomment the
+# repo name header and Include lines. You can add preferred servers immediately
+# after the header, and they will be used before the default mirrors.
+
+#[gremlins]
+#Include = /etc/pacman.d/mirrorlist
+
+[system]
+Include = /etc/pacman.d/mirrorlist
+
+# Manjaro
+
+[extra]
+Include = /etc/pacman.d/mirrorlist-manjaro
+
+[community]
+Include = /etc/pacman.d/mirrorlist-manjaro
+
+[multilib]
+Include = /etc/pacman.d/mirrorlist-manjaro
+
+
+[world]
+Include = /etc/pacman.d/mirrorlist
+
+#[galaxy-gremlins]
+#Include = /etc/pacman.d/mirrorlist
+
+[galaxy]
+Include = /etc/pacman.d/mirrorlist
+
+# If you want to run 32 bit applications on your x86_64 system,
+# enable the lib32 repositories as required here.
+
+#[lib32-gremlins]
+#Include = /etc/pacman.d/mirrorlist
+
+#[lib32]
+#Include = /etc/pacman.d/mirrorlist
+
+# An example of a custom package repository.  See the pacman manpage for
+# tips on creating your own repositories.
+#[custom]
+#SigLevel = Optional TrustAll
+#Server = file:///home/custompkgs
+
+
+# Manjaro openrc
+
+#[keyrings]
+#Include = /etc/pacman.d/mirrorlist-keyrings
+
+
+# Vider la cache :
+
+sudo pacman -Scc 
+
+# Syncroniser les mirroirs :
+
+sudo pacman -Syy 
+
+# Installer les paquets suivants :
+
+sudo pacman -S archlinux-keyring manjaro-keyring 
+
+# Rétablir la sécurité dans le pacman.conf 
+
+# Vider le cache
+
+sudo pacman -Scc --noconfirm
+
+# Rajouter les outils manjaro :
+
+sudo pacman -S manjaro-settings-manager 
+
+# Rajouter les éléments graphiques manjaro : 
+
+sudo pacman -S bootsplash-theme-manjaro grub-theme-manjaro manjaro-artwork manjaro-artwork-extra manjaro-backgrounds manjaro-base-skel manjaro-grub-theme-blue manjaro-icons  manjaro-mate-panel-layout manjaro-mate-settings 
+
+# Modifier le /etc/default/grub 
+
+Rajouter/Modifier cette ligne : 
+
+GRUB_THEME="/usr/share/grub/themes/manjaro/theme.txt" 
+
+et 
+
+GRUB_DISTRIBUTOR="Manjaro Openrc"
+
+# Modifier les menuentries afin que Manjaro Openrc s'affiche à la place de Artix
+Éditer le fichier : /boot/grub/grub.cfg
+
+# Modifier les fichiers suivants :
+
+sudo nano /etc/os-release 
+
+NAME="Manjaro Openrc"
+PRETTY_NAME="Manjaro Openrc"
+ID=artix
+BUILD_ID=rolling
+ANSI_COLOR="0;36"
+HOME_URL="https://www.artixlinux.org/"
+DOCUMENTATION_URL="https://wiki.artixlinux.org/"
+SUPPORT_URL="https://forum.artixlinux.org/"
+BUG_REPORT_URL="https://bugs.artixlinux.org/"
+LOGO=manjarolinux
+
+# Optionnel, modifier le hostname de la machine 
+
+sudo nano /etc/conf.d/hostname
+
+sudo nano /etc/hostname
+
+sudo nano /etc/hosts
+
+# Installer des utilitaires graphiques
+sudo pacman -S pamac-aur libpamac-aur 
